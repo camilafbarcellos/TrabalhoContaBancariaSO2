@@ -21,6 +21,13 @@ public class Cliente extends Thread {
 
     public static void main(String args[]) {
         try {
+            System.out.println(". . . . . . . . . . . . . . . . . . . . .");
+            System.out.println(".     BANCO MULTI SOCKETS - CLIENTE     .");
+            System.out.println(". . . . . . . . . . . . . . . . . . . . .");
+            System.out.println(". Camila F Barcellos                    .");
+            System.out.println(". Sistemas Operacionais II              .");
+            System.out.println(". Prof. Roberto Wiest                   .");
+            System.out.println(". . . . . . . . . . . . . . . . . . . . .");
             // Para se conectar a algum servidor, basta se criar um
             // objeto da classe Socket. O primeiro parâmetro é o IP ou
             // o endereço da máquina a qual se quer conectar e o
@@ -37,41 +44,43 @@ public class Cliente extends Thread {
             BufferedReader teclado = new BufferedReader(new InputStreamReader(System.in));
 
             // autenticacao de tipo de cliente
-            String tipoCliente;
+            String tipoCliente = "";
             do {
-                System.out.printf("Informe o tipo de usuário (admin / user): ");
+                System.out.printf("\nTipo de cliente (admin / user): ");
                 tipoCliente = teclado.readLine();
                 if (!tipoCliente.equalsIgnoreCase("admin") && !tipoCliente.equalsIgnoreCase("user")) {
                     System.out.println("Tipo incorreto! Tente novamente...");
                 }
             } while (!tipoCliente.equalsIgnoreCase("admin") && !tipoCliente.equalsIgnoreCase("user"));
-            System.out.println("Tipo: " + tipoCliente);
             saida.println(tipoCliente);
-            // PASSAR O TIPO
 
             // autenticacao de cliente admin
             String senhaAdmin = "";
             if (tipoCliente.equalsIgnoreCase("admin")) {
                 do {
-                    System.out.printf("Informe a senha de administrador ou digite 0 para sair: ");
+                    System.out.printf("Senha de administrador (0-sair): ");
                     senhaAdmin = teclado.readLine();
                     if (!senhaAdmin.equals("123456") && !senhaAdmin.equals("0")) {
                         System.out.println("Senha incorreta! Tente novamente...");
                     } else if (senhaAdmin.equals("0")) {
-                        System.out.println("Encerrando conexão do cliente...");
-                        conexao.close();
+                        saida.println("SAIR");
                         return;
                     }
                 } while (!senhaAdmin.equals("123456") && !senhaAdmin.equals("0"));
 
-                System.out.println("Administrador autenticado com sucesso!");
+                System.out.println("Autenticado com sucesso!");
             }
+            
+            // Uma vez que tudo está pronto, antes de iniciar o loop
+            // principal, executar a thread de recepção de mensagens.
+            Thread t = new Cliente(conexao);
+            t.start();
 
             // menu de cada tipo de cliente
             if (tipoCliente.equalsIgnoreCase("user")) {
                 int opcaoMenu;
                 do {
-                    System.out.println(". . . . . . . . . . . . . .");
+                    System.out.println("\n. . . . . . . . . . . . . .");
                     System.out.println(".     MENU DE USUÁRIO     .");
                     System.out.println(". . . . . . . . . . . . . .");
                     System.out.println(". 1 - Depositar           .");
@@ -85,21 +94,22 @@ public class Cliente extends Thread {
 
                     switch (opcaoMenu) {
                         case 0:
-                            System.out.println("SAIU!");
-                            conexao.close();
+                            saida.println("SAIR");
                             return;
                         case 1:
                             // deposito();
                             System.out.println("Escolheu DEPOSITO");
-                            acionarThreadDeMensagens(conexao, teclado, saida);
+                            acionarRecepcaoDeMensagens(conexao, teclado, saida);
                             break;
                         case 2:
                             // saque();
                             System.out.println("Escolheu SAQUE");
+                            acionarRecepcaoDeMensagens(conexao, teclado, saida);
                             break;
                         case 3:
                             // extrato();
                             System.out.println("Escolheu EXTRATO");
+                            acionarRecepcaoDeMensagens(conexao, teclado, saida);
                             break;
                         default:
                             System.out.println("Opção inválida!");
@@ -108,7 +118,7 @@ public class Cliente extends Thread {
             } else {
                 int opcaoMenu, opcaoOperacao;
                 do {
-                    System.out.println(". . . . . . . . . . . . . . . . .");
+                    System.out.println("\n. . . . . . . . . . . . . . . . .");
                     System.out.println(".     MENU DE ADMINISTRADOR     .");
                     System.out.println(". . . . . . . . . . . . . . . . .");
                     System.out.println(". 1 - Criar                     .");
@@ -122,8 +132,7 @@ public class Cliente extends Thread {
 
                     switch (opcaoMenu) {
                         case 0:
-                            System.out.println("SAIU!");
-                            conexao.close();
+                            saida.println("SAIR");
                             return;
                         case 1:
                             System.out.println("Escolheu CRIAR");
@@ -134,9 +143,11 @@ public class Cliente extends Thread {
                                 switch (opcaoOperacao) {
                                     case 1:
                                         System.out.println("Escolheu AGÊNCIA");
+                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
                                         break;
                                     case 2:
                                         System.out.println("Escolheu CONTA");
+                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
                                         break;
                                     default:
                                         System.out.println("Opção inválida!");
@@ -152,9 +163,11 @@ public class Cliente extends Thread {
                                 switch (opcaoOperacao) {
                                     case 1:
                                         System.out.println("Escolheu AGÊNCIA");
+                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
                                         break;
                                     case 2:
                                         System.out.println("Escolheu CONTA");
+                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
                                         break;
                                     default:
                                         System.out.println("Opção inválida!");
@@ -170,9 +183,11 @@ public class Cliente extends Thread {
                                 switch (opcaoOperacao) {
                                     case 1:
                                         System.out.println("Escolheu AGÊNCIA");
+                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
                                         break;
                                     case 2:
                                         System.out.println("Escolheu CONTA");
+                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
                                         break;
                                     default:
                                         System.out.println("Opção inválida!");
@@ -188,9 +203,11 @@ public class Cliente extends Thread {
                                 switch (opcaoOperacao) {
                                     case 1:
                                         System.out.println("Escolheu AGÊNCIA");
+                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
                                         break;
                                     case 2:
                                         System.out.println("Escolheu CONTA");
+                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
                                         break;
                                     default:
                                         System.out.println("Opção inválida!");
@@ -207,12 +224,8 @@ public class Cliente extends Thread {
         }
     }
 
-    public static void acionarThreadDeMensagens(Socket conexao, BufferedReader teclado, PrintStream saida) {
+    public static void acionarRecepcaoDeMensagens(Socket conexao, BufferedReader teclado, PrintStream saida) {
         try {
-            // Uma vez que tudo está pronto, antes de iniciar o loop
-            // principal, executar a thread de recepção de mensagens.
-            Thread t = new Cliente(conexao);
-            t.start();
             // loop principal: obtendo uma linha digitada no teclado e
             // enviando-a para o servidor.
             String linha;
@@ -228,8 +241,8 @@ public class Cliente extends Thread {
                 saida.println(linha);
                 return;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("IOException: " + e);
         }
     }
 
@@ -241,12 +254,10 @@ public class Cliente extends Thread {
             while (true) {
                 // pega o que o servidor enviou
                 linha = entrada.readLine();
-                // verifica se é uma linha válida. Pode ser que a conexão
-                // foi interrompida. Neste caso, a linha é null. Se isso
-                // ocorrer, termina-se a execução saindo com break
+                // caso a linha seja nula, finaliza conexao
                 if (linha == null) {
-                    System.out.println("Conexão encerrada!");
-                    break;
+                    System.out.println("\nEncerrando conexão do cliente...");
+                    System.exit(0);
                 }
                 // caso a linha não seja nula, deve-se imprimi-la
                 System.out.println();

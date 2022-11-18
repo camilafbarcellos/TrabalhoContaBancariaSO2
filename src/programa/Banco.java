@@ -27,6 +27,7 @@ public class Banco extends Thread {
     // construtor que recebe o socket deste cliente
     public Banco(Cliente c) {
         cliente = c;
+        conexao = c.getSocket();
     }
 
     // execução da thread
@@ -46,6 +47,7 @@ public class Banco extends Thread {
             }
             cliente.setTipo(tipoCliente);
 
+            //clientes.add(cliente);
             // clientes é objeto compartilhado por várias threads!
             // De acordo com o manual da API, os métodos são
             // sincronizados. Portanto, não há problemas de acessos
@@ -53,10 +55,11 @@ public class Banco extends Thread {
             // Loop principal: esperando por alguma string do cliente.
             // Quando recebe, envia a todos os conectados até que o
             // cliente envie linha em branco.
-            // Verificar se linha é null (conexão interrompida)
-            // Se não for nula, pode-se compará-la com métodos string
+            // Verificar se linha em branco
+            // Se não, pode-se compará-la com métodos string
+            // OBS.: linha pode ser nula pois retorna para menu
             String linha = entrada.readLine();
-            while (linha != null) {
+            while (!linha.equals("SAIR") && !linha.trim().equals("")) {
                 // Recebe 2 parâmetros - param1;param2
                 // Divide a string a cada ;
                 String[] protocoloEntrada = linha.split(";");
@@ -81,16 +84,17 @@ public class Banco extends Thread {
             // Uma vez que o cliente enviou linha em branco, retira-se
             // fluxo de saída do vetor de clientes e fecha-se conexão.
             clientes.remove(cliente);
+            saida.close();
             System.out.println("\nCliente " + cliente.getTipo() + " em " + cliente.getIp() + " saiu...");
             System.out.println("\nLista de clientes conectados:");
-                for (Cliente c : clientes) {
-                    if(c.getTipo() == null) {
-                        System.out.println("-> Não-autenticado em " + c.getIp());
-                    } else {
-                        System.out.println("-> " + c.getTipo() + " em " + c.getIp());
-                    }
+            for (Cliente c : clientes) {
+                if (c.getTipo() == null) {
+                    System.out.println("-> Não-autenticado em " + c.getIp());
+                } else {
+                    System.out.println("-> " + c.getTipo() + " em " + c.getIp());
                 }
-            saida.close();
+            }
+            //saida.close();
         } catch (IOException e) {
             // Caso ocorra alguma excessão de E/S, mostre qual foi.
             System.out.println("IOException: " + e);
@@ -103,13 +107,13 @@ public class Banco extends Thread {
         try {
             // criando um socket que fica escutando a porta 2222.
             ServerSocket s = new ServerSocket(2222);
-            System.out.println(". . . . . . . . . . . . . . . . . . . . .");
-            System.out.println(".     BANCO MULTI SOCKETS - OPÇÃO 1     .");
-            System.out.println(". . . . . . . . . . . . . . . . . . . . .");
-            System.out.println(". Camila F Barcellos                    .");
-            System.out.println(". Sistemas Operacionais II              .");
-            System.out.println(". Prof. Roberto Wiest                   .");
-            System.out.println(". . . . . . . . . . . . . . . . . . . . .");
+            System.out.println(". . . . . . . . . . . . . . . . . . . . . .");
+            System.out.println(".     BANCO MULTI SOCKETS - SERVIDOR      .");
+            System.out.println(". . . . . . . . . . . . . . . . . . . . . .");
+            System.out.println(". Camila F Barcellos                      .");
+            System.out.println(". Sistemas Operacionais II                .");
+            System.out.println(". Prof. Roberto Wiest                     .");
+            System.out.println(". . . . . . . . . . . . . . . . . . . . . .");
             // Loop principal
             while (true) {
                 // aguarda algum cliente se conectar. A execução do
@@ -127,7 +131,7 @@ public class Banco extends Thread {
                 System.out.println("\nNovo cliente em " + conexao.getRemoteSocketAddress());
                 System.out.println("\nLista de clientes conectados:");
                 for (Cliente c : clientes) {
-                    if(c.getTipo() == null) {
+                    if (c.getTipo() == null) {
                         System.out.println("-> Não-autenticado em " + c.getIp());
                     } else {
                         System.out.println("-> " + c.getTipo() + " em " + c.getIp());
