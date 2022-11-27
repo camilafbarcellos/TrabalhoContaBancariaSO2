@@ -12,6 +12,10 @@ import java.util.*;
 
 public class Banco extends Thread {
 
+    private AgenciasCadastradas listaAgencias = new AgenciasCadastradas();
+    //private Agencia agencia;
+    //private Conta conta;
+    //private Correntista correntista;
     // Parte que controla as conexões por meio de threads.
     // Note que a instanciação está no main.
     private static List<Cliente> clientes;
@@ -47,6 +51,10 @@ public class Banco extends Thread {
             }
             cliente.setTipo(tipoCliente);
 
+            Agencia agencia = null;
+            Conta conta = null;
+            Correntista correntista = null;
+
             //clientes.add(cliente);
             // clientes é objeto compartilhado por várias threads!
             // De acordo com o manual da API, os métodos são
@@ -59,28 +67,120 @@ public class Banco extends Thread {
             // Se não, pode-se compará-la com métodos string
             // OBS.: linha pode ser nula pois retorna para menu
             String linha = entrada.readLine();
-            while (!linha.equals("SAIR") && !linha.trim().equals("")) {
-                // Recebe 2 parâmetros - param1;param2
-                // Divide a string a cada ;
-                String[] protocoloEntrada = linha.split(";");
-                int param1 = Integer.parseInt(protocoloEntrada[0]);
-                String param2 = protocoloEntrada[1];
-                switch (param1) {
-                    case 1:
-                        System.out.println("Rodando comando mkdir no diretório ...\\" + param2);
-                        break;
-                    case 2:
-                        System.out.println("Rodando comando rmdir no diretório ...\\" + param2);
-                        break;
-                    case 3:
-                        System.out.println("Rodando comando dir no diretório ...\\" + param2);
-                        break;
-                    default:
-                        System.out.print("Comando de parâmetro " + param1 + " inexistente!");
+
+            if (tipoCliente.equalsIgnoreCase("user")) {
+                //cpfCorrentista = entrada.readLine();
+
+                while (!linha.equals("SAIR") && !linha.trim().equals("")) {
+                    // Protocolo de entrada de cliente tipo user:
+                    // operacao;numeroAgencia;numeroConta;cpfCorrentista;valor
+                    // OBS.: valor é parâmetro de saque e depósito
+                    String[] protocoloEntrada = linha.split(";");
+                    int operacao = Integer.parseInt(protocoloEntrada[0]);
+                    int numeroAgencia = Integer.parseInt(protocoloEntrada[1]);
+                    int numeroConta = Integer.parseInt(protocoloEntrada[2]);
+                    String cpfCorrentista = protocoloEntrada[3];
+
+                    agencia = listaAgencias.getAgencia(numeroAgencia);
+                    conta = agencia.getConta(numeroConta);
+                    correntista = conta.getCorrentista(cpfCorrentista);
+
+                    if (operacao == 2) {
+                        float valor = Float.parseFloat(protocoloEntrada[4]);
+                        conta.sacar(valor);
+                        System.out.println("\n-> Saque na conta " + conta.getNumero()
+                                + " no valor de R$ " + valor + " realizado por "
+                                + correntista.getNome());
+                    } else if (operacao == 1) {
+                        float valor = Float.parseFloat(protocoloEntrada[4]);
+                        conta.depositar(valor);
+                        System.out.println("\n-> Depósito na conta " + conta.getNumero()
+                                + " no valor de R$ " + valor + " realizado por "
+                                + correntista.getNome());
+                    }
+
+                    // exibe extrato ao final de toda operação
+                    conta.verificarSaldo();
+
+                    // espera por uma nova linha.
+                    linha = entrada.readLine();
                 }
-                // espera por uma nova linha.
-                linha = entrada.readLine();
+
+            } else {
+                while (!linha.equals("SAIR") && !linha.trim().equals("")) {
+                    // Protocolo de entrada de cliente tipo admin depende
+                    // do alvo da operação realizada - Agencia ou Conta
+                    String[] protocoloEntrada = linha.split(";");
+                    // primeiro parâmetro é a operação
+                    int operacao = Integer.parseInt(protocoloEntrada[0]);
+                    int numeroAgencia, numeroConta;
+                    String descricaoAgencia;
+
+                    /*
+                    Agencia agencia = null;
+                    Conta conta = null;
+                    Correntista correntista = null;
+                     */
+                    switch (operacao) {
+                        case 1: // protocolo operacao;numeroAgencia;descricaoAgencia
+                            numeroAgencia = Integer.parseInt(protocoloEntrada[1]);
+                            descricaoAgencia = protocoloEntrada[2];
+                            agencia = new Agencia(numeroAgencia, descricaoAgencia);
+                            listaAgencias.addAgencia(numeroAgencia, agencia);
+                            System.out.println("\n-> Agência " + numeroAgencia + " criada!");
+                            break;
+                        case 2: // protocolo operacao
+                            System.out.println("\n-> Leitura de Agências:");
+                            listaAgencias.listarAgencias();
+                            break;
+                        case 3:
+
+                            break;
+                        case 4: // protocolo operacao;numeroAgencia
+                            numeroAgencia = Integer.parseInt(protocoloEntrada[1]);
+                            listaAgencias.removeAgencia(numeroAgencia);
+                            System.out.println("\n-> Agência " + numeroAgencia + " removida!");
+                            break;
+                        case 5: // protocolo operacao;numeroAgencia;numeroConta
+                            numeroAgencia = Integer.parseInt(protocoloEntrada[1]);
+                            numeroConta = Integer.parseInt(protocoloEntrada[2]);
+                            agencia = listaAgencias.getAgencia(numeroAgencia);
+                            conta = new Conta(agencia, numeroConta);
+                            agencia.addConta(numeroConta, conta);
+                            System.out.println("\n-> Conta " + numeroConta + " criada!");
+                            break;
+                        case 6: // protocolo operacao;numeroAgencia
+                            numeroAgencia = Integer.parseInt(protocoloEntrada[1]);
+                            agencia = listaAgencias.getAgencia(numeroAgencia);
+                            System.out.println("\n-> Leitura de Contas da Agência "
+                                    + numeroAgencia + ":");
+                            agencia.listarContas();
+                            break;
+                        case 7:
+
+                            break;
+                        case 8: // protocolo operacao;numeroAgencia;numeroConta
+                            numeroAgencia = Integer.parseInt(protocoloEntrada[1]);
+                            numeroConta = Integer.parseInt(protocoloEntrada[2]);
+                            agencia = listaAgencias.getAgencia(numeroAgencia);
+                            conta = agencia.getConta(numeroConta);
+                            agencia.removeConta(conta.getNumero());
+                            System.out.println("\n-> Conta " + numeroConta
+                                    + " removida da Agência " + numeroAgencia);
+                            break;
+                        default:
+                            break;
+                    }
+                    
+                    agencia = null;
+                    conta = null;
+                    correntista = null;
+
+                    // espera por uma nova linha.
+                    linha = entrada.readLine();
+                }
             }
+
             // Uma vez que o cliente enviou linha em branco, retira-se
             // fluxo de saída do vetor de clientes e fecha-se conexão.
             clientes.remove(cliente);

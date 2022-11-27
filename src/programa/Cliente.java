@@ -46,7 +46,7 @@ public class Cliente extends Thread {
             // autenticacao de tipo de cliente
             String tipoCliente = "";
             do {
-                System.out.printf("\nTipo de cliente (admin / user): ");
+                System.out.print("\nTipo de cliente (admin / user): ");
                 tipoCliente = teclado.readLine();
                 if (!tipoCliente.equalsIgnoreCase("admin") && !tipoCliente.equalsIgnoreCase("user")) {
                     System.out.println("Tipo incorreto! Tente novamente...");
@@ -58,7 +58,7 @@ public class Cliente extends Thread {
             String senhaAdmin = "";
             if (tipoCliente.equalsIgnoreCase("admin")) {
                 do {
-                    System.out.printf("Senha de administrador (0-sair): ");
+                    System.out.print("Senha de administrador (0-sair): ");
                     senhaAdmin = teclado.readLine();
                     if (!senhaAdmin.equals("123456") && !senhaAdmin.equals("0")) {
                         System.out.println("Senha incorreta! Tente novamente...");
@@ -70,11 +70,13 @@ public class Cliente extends Thread {
 
                 System.out.println("Autenticado com sucesso!");
             }
-            
+
             // Uma vez que tudo está pronto, antes de iniciar o loop
             // principal, executar a thread de recepção de mensagens.
             Thread t = new Cliente(conexao);
             t.start();
+            
+            String protocoloEntrada;
 
             // menu de cada tipo de cliente
             if (tipoCliente.equalsIgnoreCase("user")) {
@@ -89,130 +91,90 @@ public class Cliente extends Thread {
                     System.out.println(". 0 - Sair                .");
                     System.out.println(". . . . . . . . . . . . . .");
 
-                    System.out.printf("Sua opção: ");
+                    System.out.print("Sua opção: ");
                     opcaoMenu = Integer.parseInt(teclado.readLine());
+                    
+                    protocoloEntrada = String.valueOf(opcaoMenu);
+                    System.out.println("Protocolo: " + protocoloEntrada);
 
                     switch (opcaoMenu) {
                         case 0:
                             saida.println("SAIR");
                             return;
                         case 1:
-                            // deposito();
                             System.out.println("Escolheu DEPOSITO");
-                            acionarRecepcaoDeMensagens(conexao, teclado, saida);
+                            acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
                         case 2:
-                            // saque();
                             System.out.println("Escolheu SAQUE");
-                            acionarRecepcaoDeMensagens(conexao, teclado, saida);
+                            acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
                         case 3:
-                            // extrato();
                             System.out.println("Escolheu EXTRATO");
-                            acionarRecepcaoDeMensagens(conexao, teclado, saida);
+                            acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
                         default:
                             System.out.println("Opção inválida!");
                     }
                 } while (opcaoMenu != 0);
             } else {
-                int opcaoMenu, opcaoOperacao;
+                int opcaoMenu;
                 do {
                     System.out.println("\n. . . . . . . . . . . . . . . . .");
                     System.out.println(".     MENU DE ADMINISTRADOR     .");
                     System.out.println(". . . . . . . . . . . . . . . . .");
-                    System.out.println(". 1 - Criar                     .");
-                    System.out.println(". 2 - Ler                       .");
-                    System.out.println(". 3 - Atualizar                 .");
-                    System.out.println(". 4 - Deletar                   .");
+                    System.out.println(". 1 - Criar Agência             .");
+                    System.out.println(". 2 - Ler Agências              .");
+                    System.out.println(". 3 - Atualizar Agência         .");
+                    System.out.println(". 4 - Deletar Agência           .");
+                    System.out.println(".                               .");
+                    System.out.println(". 5 - Criar Conta               .");
+                    System.out.println(". 6 - Ler Contas                .");
+                    System.out.println(". 7 - Atualizar Conta           .");
+                    System.out.println(". 8 - Deletar Conta             .");
                     System.out.println(". 0 - Sair                      .");
                     System.out.println(". . . . . . . . . . . . . . . . .");
-                    System.out.printf("Sua opção: ");
+                    System.out.print("Sua opção: ");
                     opcaoMenu = Integer.parseInt(teclado.readLine());
+                    
+                    protocoloEntrada = String.valueOf(opcaoMenu);
+                    System.out.println("Protocolo: " + protocoloEntrada);
 
                     switch (opcaoMenu) {
                         case 0:
                             saida.println("SAIR");
                             return;
                         case 1:
-                            System.out.println("Escolheu CRIAR");
-                            do {
-                                System.out.printf("Agência (1) ou Conta Bancária (2): ");
-                                opcaoOperacao = Integer.parseInt(teclado.readLine());
-
-                                switch (opcaoOperacao) {
-                                    case 1:
-                                        System.out.println("Escolheu AGÊNCIA");
-                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
-                                        break;
-                                    case 2:
-                                        System.out.println("Escolheu CONTA");
-                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
-                                        break;
-                                    default:
-                                        System.out.println("Opção inválida!");
-                                }
-                            } while (opcaoOperacao != 1 && opcaoOperacao != 2);
+                            System.out.println("Escolheu CRIAR A");
+                            acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
                         case 2:
-                            System.out.println("Escolheu LER");
-                            do {
-                                System.out.printf("Agência (1) ou Conta Bancária (2): ");
-                                opcaoOperacao = Integer.parseInt(teclado.readLine());
-
-                                switch (opcaoOperacao) {
-                                    case 1:
-                                        System.out.println("Escolheu AGÊNCIA");
-                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
-                                        break;
-                                    case 2:
-                                        System.out.println("Escolheu CONTA");
-                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
-                                        break;
-                                    default:
-                                        System.out.println("Opção inválida!");
-                                }
-                            } while (opcaoOperacao != 1 && opcaoOperacao != 2);
+                            System.out.println("Escolheu LER A");
+                            acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
                         case 3:
-                            System.out.println("Escolheu ATUALIZAR");
-                            do {
-                                System.out.printf("Agência (1) ou Conta Bancária (2): ");
-                                opcaoOperacao = Integer.parseInt(teclado.readLine());
-
-                                switch (opcaoOperacao) {
-                                    case 1:
-                                        System.out.println("Escolheu AGÊNCIA");
-                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
-                                        break;
-                                    case 2:
-                                        System.out.println("Escolheu CONTA");
-                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
-                                        break;
-                                    default:
-                                        System.out.println("Opção inválida!");
-                                }
-                            } while (opcaoOperacao != 1 && opcaoOperacao != 2);
+                            System.out.println("Escolheu ATUALIZAR A");
+                            acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
                         case 4:
-                            System.out.println("Escolheu DELETAR");
-                            do {
-                                System.out.printf("Agência (1) ou Conta Bancária (2): ");
-                                opcaoOperacao = Integer.parseInt(teclado.readLine());
-
-                                switch (opcaoOperacao) {
-                                    case 1:
-                                        System.out.println("Escolheu AGÊNCIA");
-                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
-                                        break;
-                                    case 2:
-                                        System.out.println("Escolheu CONTA");
-                                        acionarRecepcaoDeMensagens(conexao, teclado, saida);
-                                        break;
-                                    default:
-                                        System.out.println("Opção inválida!");
-                                }
-                            } while (opcaoOperacao != 1 && opcaoOperacao != 2);
+                            System.out.println("Escolheu DELETAR A");
+                            acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
+                            break;
+                        case 5:
+                            System.out.println("Escolheu CRIAR C");
+                            acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
+                            break;
+                        case 6:
+                            System.out.println("Escolheu LER C");
+                            acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
+                            break;
+                        case 7:
+                            System.out.println("Escolheu ATUALIZAR C");
+                            acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
+                            break;
+                        case 8:
+                            System.out.println("Escolheu DELETAR C");
+                            acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
                         default:
                             System.out.println("Opção inválida!");
@@ -224,7 +186,8 @@ public class Cliente extends Thread {
         }
     }
 
-    public static void acionarRecepcaoDeMensagens(Socket conexao, BufferedReader teclado, PrintStream saida) {
+    public static void acionarRecepcaoDeMensagens(Socket conexao, BufferedReader teclado,
+            PrintStream saida, String protocoloEntrada) {
         try {
             // loop principal: obtendo uma linha digitada no teclado e
             // enviando-a para o servidor.
@@ -237,8 +200,11 @@ public class Cliente extends Thread {
                 if (done) {
                     break;
                 }
+                // adiciona ao protocolo de entrada
+                protocoloEntrada += ";" + linha;
+                System.out.println("Protocolo: " + protocoloEntrada);
                 // envia para o servidor
-                saida.println(linha);
+                saida.println(protocoloEntrada);
                 return;
             }
         } catch (IOException e) {
