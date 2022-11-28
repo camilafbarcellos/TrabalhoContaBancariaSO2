@@ -1,8 +1,6 @@
 package programa;
 
-import java.util.Iterator;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
@@ -23,7 +21,7 @@ public class AgenciasCadastradas {
             e.printStackTrace();
         }
     }
-
+    
     public Agencia getAgencia(int numero) {
         try {
             return this.agencias.get(numero);
@@ -31,21 +29,6 @@ public class AgenciasCadastradas {
             e.printStackTrace();
             return null;
         }
-    }
-    
-    public Agencia getAgenciaOld(int numeroAgencia) {
-        Iterator it = agencias.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry el = (Map.Entry) it.next();
-            int numero = (Integer) el.getKey();
-            if (numero == numeroAgencia) {
-                Agencia a = this.getAgencia(numero);
-                return a;
-            }
-            it.remove(); // avoids a ConcurrentModificationException
-        }
-        
-        return null;
     }
 
     public void removeAgencia(int numero) {
@@ -55,17 +38,23 @@ public class AgenciasCadastradas {
             e.printStackTrace();
         }
     }
+    
+    public void listarAgencias() {
+        System.out.println(agencias);
+    }
 
+    /*
     public void listarAgencias() {
         Iterator it = agencias.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry el = (Map.Entry) it.next();
             int numero = (Integer) el.getKey();
-            Agencia a = this.getAgenciaOld(numero);
+            Agencia a = this.getAgencia(numero);
             System.out.println(a.getNumero() + " = " + a.getDescricao());
             it.remove(); // avoids a ConcurrentModificationException
         }
     }
+    */
 
     public HashMap<Integer, Agencia> getAgencias() {
         return agencias;

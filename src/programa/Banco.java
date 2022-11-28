@@ -13,9 +13,6 @@ import java.util.*;
 public class Banco extends Thread {
 
     private AgenciasCadastradas listaAgencias = new AgenciasCadastradas();
-    //private Agencia agencia;
-    //private Conta conta;
-    //private Correntista correntista;
     // Parte que controla as conexões por meio de threads.
     // Note que a instanciação está no main.
     private static List<Cliente> clientes;
@@ -51,9 +48,9 @@ public class Banco extends Thread {
             }
             cliente.setTipo(tipoCliente);
 
-            Agencia agencia = null;
-            Conta conta = null;
-            Correntista correntista = null;
+            Agencia agencia;
+            Conta conta;
+            Correntista correntista;
 
             //clientes.add(cliente);
             // clientes é objeto compartilhado por várias threads!
@@ -115,12 +112,7 @@ public class Banco extends Thread {
                     int operacao = Integer.parseInt(protocoloEntrada[0]);
                     int numeroAgencia, numeroConta;
                     String descricaoAgencia;
-
-                    /*
-                    Agencia agencia = null;
-                    Conta conta = null;
-                    Correntista correntista = null;
-                     */
+                    
                     switch (operacao) {
                         case 1: // protocolo operacao;numeroAgencia;descricaoAgencia
                             numeroAgencia = Integer.parseInt(protocoloEntrada[1]);
@@ -171,10 +163,6 @@ public class Banco extends Thread {
                         default:
                             break;
                     }
-                    
-                    agencia = null;
-                    conta = null;
-                    correntista = null;
 
                     // espera por uma nova linha.
                     linha = entrada.readLine();

@@ -1,8 +1,6 @@
 package programa;
 
-import java.util.Iterator;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
@@ -69,6 +67,11 @@ public class Agencia {
         }
     }
     
+    public void listarContas() {
+        System.out.println(contas);
+    }
+    
+    /*
     public void listarContas() {        
         Iterator it = contas.entrySet().iterator();
         while (it.hasNext()) {
@@ -78,19 +81,6 @@ public class Agencia {
             System.out.println(c.getNumero() + " = " + c.getSaldo());
             it.remove(); // avoids a ConcurrentModificationException
         }
-    }
-
-    /*
-    public void addConta(Conta conta) {
-        if (this.contas == null) {
-            this.contas = new ArrayList<>();
-        }
-
-        this.contas.add(conta);
-    }
-
-    public void removeConta(Conta conta) {
-        this.contas.remove(conta);
     }
     */
 
