@@ -3,11 +3,13 @@ package programa;
 import java.io.*;
 import java.net.*;
 
+/**Cliente do banco
+ * @author Camila Florão Barcellos
+ */
 public class Cliente extends Thread {
 
-    // Flag que indica quando se deve terminar a execução.
+    // flag que indica quando se deve terminar a execução.
     private static boolean done = false;
-    // parte que controla a recepção de mensagens deste cliente
     private Socket socket;
     // atributos do cliente
     private String ip;
@@ -15,10 +17,22 @@ public class Cliente extends Thread {
     private PrintStream saida;
 
     // construtor que recebe o socket deste cliente
+
+    /**Construtor que recebe e seta o socket do cliente
+     * @author Camila Florão Barcellos
+     * @param socket Socket - Socket do cliente
+     */
     public Cliente(Socket socket) {
         setSocket(socket);
     }
 
+    /**Método principal de execução do cliente que
+     * controla o tipo de cliente conectado e
+     * apresenta o menu de opções para cada tipo,
+     * montando o protocolo enviado ao servidor
+     * @author Camila Florão Barcellos
+     * @param args String - Bloco de comandos
+     */
     public static void main(String args[]) {
         try {
             System.out.println(". . . . . . . . . . . . . . . . . . . . .");
@@ -28,22 +42,14 @@ public class Cliente extends Thread {
             System.out.println(". Sistemas Operacionais II              .");
             System.out.println(". Prof. Roberto Wiest                   .");
             System.out.println(". . . . . . . . . . . . . . . . . . . . .");
-            // Para se conectar a algum servidor, basta se criar um
-            // objeto da classe Socket. O primeiro parâmetro é o IP ou
-            // o endereço da máquina a qual se quer conectar e o
-            // segundo parâmetro é a porta da aplicação. Neste caso,
-            // utiliza-se o IP da máquina local (127.0.0.1) e a porta
-            // da aplicação ServidorDeChat. Nada impede a mudança
-            // desses valores, tentando estabelecer uma conexão com
-            // outras portas em outras máquinas.
+            
+            // instancia a nova conexão
             Socket conexao = new Socket("127.0.0.1", 2222);
-            // uma vez estabelecida a comunicação, deve-se obter os
-            // objetos que permitem controlar o fluxo de comunicação
+            // instancia objetos que permitem controlar o fluxo de comunicação
             PrintStream saida = new PrintStream(conexao.getOutputStream());
-            // enviar antes de tudo o nome do usuário
             BufferedReader teclado = new BufferedReader(new InputStreamReader(System.in));
 
-            // autenticacao de tipo de cliente
+            // autenticação do tipo de cliente
             String tipoCliente = "";
             do {
                 System.out.print("\nTipo de cliente (admin / user): ");
@@ -52,9 +58,8 @@ public class Cliente extends Thread {
                     System.out.println("Tipo incorreto! Tente novamente...");
                 }
             } while (!tipoCliente.equalsIgnoreCase("admin") && !tipoCliente.equalsIgnoreCase("user"));
-            saida.println(tipoCliente);
 
-            // autenticacao de cliente admin
+            // validação de cliente admin
             String senhaAdmin = "";
             if (tipoCliente.equalsIgnoreCase("admin")) {
                 do {
@@ -70,12 +75,15 @@ public class Cliente extends Thread {
 
                 System.out.println("Autenticado com sucesso!");
             }
+            
+            // envia primeiramente o tipo do cliente ao servidor
+            saida.println(tipoCliente);
 
-            // Uma vez que tudo está pronto, antes de iniciar o loop
-            // principal, executar a thread de recepção de mensagens.
+            // executa a thread de recepção de mensagens
             Thread t = new Cliente(conexao);
             t.start();
 
+            // mensagem contendo o protocolo a ser enviado ao servidor
             String protocoloEntrada;
 
             // menu de cada tipo de cliente
@@ -92,7 +100,7 @@ public class Cliente extends Thread {
                     System.out.println(". . . . . . . . . . . . . .");
                     System.out.print("Sua opção: ");
                     opcaoMenu = Integer.parseInt(teclado.readLine());
-
+                    // começa a montar o protocolo
                     protocoloEntrada = String.valueOf(opcaoMenu);
 
                     switch (opcaoMenu) {
@@ -142,7 +150,7 @@ public class Cliente extends Thread {
                     System.out.println(". . . . . . . . . . . . . . . . .");
                     System.out.print("Sua opção: ");
                     opcaoMenu = Integer.parseInt(teclado.readLine());
-
+                    // começa a montar o protocolo
                     protocoloEntrada = String.valueOf(opcaoMenu);
 
                     switch (opcaoMenu) {
@@ -211,6 +219,15 @@ public class Cliente extends Thread {
         }
     }
 
+    /**Recepção e tratamento das mensagens contendo os
+     * protocolos a serem enviados ao servidor por meio
+     * de um loop que lê a linha e envia para o servidor
+     * @author Camila Florão Barcellos
+     * @param conexao Socket - Socket do cliente
+     * @param teclado BufferedReader - Fluxo do teclado
+     * @param saida PrintStream - Fluxo da comunicação
+     * @param protocoloEntrada String - Protocolo de envio
+     */
     public static void acionarRecepcaoDeMensagens(Socket conexao, BufferedReader teclado,
             PrintStream saida, String protocoloEntrada) {
         try {
@@ -218,14 +235,14 @@ public class Cliente extends Thread {
             // enviando-a para o servidor.
             String linha;
             while (true) {
-                // ler a linha digitada no teclado
                 System.out.print("> ");
+                // lê a linha digitada no teclado
                 linha = teclado.readLine();
                 // antes de enviar, verifica se a conexão não foi fechada
                 if (done) {
                     break;
                 }
-                // adiciona ao protocolo de entrada
+                // junta a linha com o protocolo inicial contendo a opção
                 protocoloEntrada += ";" + linha;
                 System.out.println("Protocolo enviado: " + protocoloEntrada);
                 // envia para o servidor
@@ -237,15 +254,19 @@ public class Cliente extends Thread {
         }
     }
 
-    // execução da thread
+    /**Execução da thread que realiza o controle do cliente
+     * e das mensagens recebidas do servidor para impressão
+     * ou finalização do cliente
+     * @author Camila Florão Barcellos
+     */
     public void run() {
         try {
             BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String linha;
             while (true) {
-                // pega o que o servidor enviou
+                // captura a mensagem enviada pelo servidor
                 linha = entrada.readLine();
-                // caso a linha seja nula, finaliza conexao
+                // caso a linha seja nula, finaliza conexão
                 if (linha == null) {
                     System.out.println("\nEncerrando conexão do cliente...");
                     System.exit(0);
@@ -255,41 +276,64 @@ public class Cliente extends Thread {
                 System.out.println(linha);
             }
         } catch (IOException e) {
-            // caso ocorra alguma exceção de E/S, mostre qual foi.
             System.out.println("IOException: " + e);
         }
-        // sinaliza para o main que a conexão encerrou.
+        // sinaliza para o main que a conexão encerrou
         done = true;
     }
 
+    /**Método de retorno do tipo
+     * @return tipo - Tipo do cliente
+     */
     public String getTipo() {
         return tipo;
     }
 
+    /**Método de atribuição do tipo
+     * @param tipo String - Tipo do cliente
+     */
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 
+    /**Método de retorno do socket
+     * @return socket - Socket do cliente
+     */
     public Socket getSocket() {
         return socket;
     }
 
+    /**Método de atribuição do socket
+     * @param socket Socket - Socket do cliente
+     */
     public void setSocket(Socket socket) {
         this.socket = socket;
     }
 
+    /**Método de retorno da saída
+     * @return saida - Saída do fluxo de comunicação
+     */
     public PrintStream getSaida() {
         return saida;
     }
 
+    /**Método de atribuição da saída
+     * @param saida PrintStream - Saída do fluxo de comunicação
+     */
     public void setSaida(PrintStream saida) {
         this.saida = saida;
     }
 
+    /**Método de retorno do IP
+     * @return ip - Endereço do cliente
+     */
     public String getIp() {
         return ip;
     }
 
+    /**Método de atribuição do IP
+     * @param ip String - Endereço do cliente
+     */
     public void setIp(String ip) {
         this.ip = ip;
     }

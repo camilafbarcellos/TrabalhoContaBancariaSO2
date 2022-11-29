@@ -4,6 +4,9 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+/**Servidor do banco
+ * @author Camila Florão Barcellos
+ */
 public class Banco extends Thread {
 
     private static AgenciasCadastradas listaAgencias;
@@ -15,13 +18,21 @@ public class Banco extends Thread {
     private Socket conexao;
     private String tipoCliente;
 
-    // construtor que recebe o socket deste cliente
+    /**Construtor que recebe o cliente e seta
+     * o seu socket
+     * @author Camila Florão Barcellos
+     * @param c Cliente - Cliente do banco
+     */
     public Banco(Cliente c) {
         cliente = c;
         conexao = c.getSocket();
     }
 
-    // execução da thread
+    /**Execução da thread que realiza o controle dos clientes
+     * e dos protocolos de entrada enviados por eles para
+     * realizar as ações sobre o banco
+     * @author Camila Florão Barcellos
+     */
     public void run() {
         try {
             // objetos que permitem controlar fluxo de comunicação
@@ -30,24 +41,11 @@ public class Banco extends Thread {
             cliente.setSaida(saida);
 
             tipoCliente = entrada.readLine();
-            // agora, verifica se string recebida é valida, pois
-            // sem a conexão foi interrompida, a string é null.
-            // Se isso ocorrer, deve-se terminar a execução.
             if (tipoCliente == null) {
                 return;
             }
             cliente.setTipo(tipoCliente);
-
-            // clientes é objeto compartilhado por várias threads!
-            // De acordo com o manual da API, os métodos são
-            // sincronizados. Portanto, não há problemas de acessos
-            // simultâneos.
-            // Loop principal: esperando por alguma string do cliente.
-            // Quando recebe, envia a todos os conectados até que o
-            // cliente envie linha em branco.
-            // Verificar se linha em branco
-            // Se não, pode-se compará-la com métodos string
-            // OBS.: linha pode ser nula pois retorna para menu
+            
             String linha = entrada.readLine();
 
             if (tipoCliente.equalsIgnoreCase("user")) {
@@ -296,9 +294,7 @@ public class Banco extends Thread {
                     linha = entrada.readLine();
                 }
             }
-
-            // Uma vez que o cliente enviou linha em branco, retira-se
-            // fluxo de saída do vetor de clientes e fecha-se conexão.
+            
             clientes.remove(cliente);
             saida.close();
             System.out.println("\nCliente " + cliente.getTipo() + " em " + cliente.getIp() + " saiu...");
@@ -311,17 +307,23 @@ public class Banco extends Thread {
                 }
             }
         } catch (IOException e) {
-            // Caso ocorra alguma excessão de E/S, mostre qual foi.
             System.out.println("IOException: " + e);
         }
     }
 
+    /**Método principal de execução do servidor que
+     * realiza o tratamento das conexões dos clientes
+     * ao servidor por meio de threads
+     * @author Camila Florão Barcellos
+     * @param args String - Bloco de comandos
+     */
     public static void main(String args[]) {
-        // instancia o vetor de clientes conectados
+        // instancia a lista de clientes conectados
         clientes = new ArrayList<>();
+        // instancia o objeto de agências cadastradas
         listaAgencias = new AgenciasCadastradas();
         try {
-            // criando um socket que fica escutando a porta 2222.
+            // criando um socket que fica escutando a porta 2222
             ServerSocket s = new ServerSocket(2222);
             System.out.println(". . . . . . . . . . . . . . . . . . . . . .");
             System.out.println(".     BANCO MULTI SOCKETS - SERVIDOR      .");
@@ -330,18 +332,16 @@ public class Banco extends Thread {
             System.out.println(". Sistemas Operacionais II                .");
             System.out.println(". Prof. Roberto Wiest                     .");
             System.out.println(". . . . . . . . . . . . . . . . . . . . . .");
-            // Loop principal
+            
             while (true) {
-                // aguarda algum cliente se conectar. A execução do
-                // servidor fica bloqueada na chamada do método accept da
-                // classe ServerSocket. Quando algum cliente se conectar
-                // ao servidor, o método desbloqueia e retorna com um
-                // objeto da classe Socket, que é porta da comunicação.
                 System.out.println("\nAguardando conexão de clientes...");
+                // aceita a conexão
                 Socket conexao = s.accept();
+                // instancia cliente com o socket
                 Cliente cliente = new Cliente(conexao);
+                // atribui o endereço do cliente ao seu IP
                 cliente.setIp(conexao.getRemoteSocketAddress().toString());
-
+                // adiciona o cliente na lista de clientes do servidor
                 clientes.add(cliente);
 
                 System.out.println("\nNovo cliente em " + conexao.getRemoteSocketAddress());
@@ -357,10 +357,9 @@ public class Banco extends Thread {
                 // cria uma nova thread para tratar essa conexão
                 Thread t = new Banco(cliente);
                 t.start();
-                // voltando ao loop, esperando mais alguém se conectar.
+                // volta ao loop e espera mais conexões
             }
         } catch (IOException e) {
-            // caso ocorra alguma excessão de E/S, mostre qual foi.
             System.out.println("IOException: " + e);
         }
     }
