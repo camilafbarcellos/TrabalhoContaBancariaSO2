@@ -159,6 +159,11 @@ public class Banco extends Thread {
                         case 1: // protocolo operacao;numeroAgencia;descricaoAgencia
                             numeroAgencia = Integer.parseInt(protocoloEntrada[1]);
                             descricaoAgencia = protocoloEntrada[2];
+                            if (listaAgencias.getAgencia(numeroAgencia) != null) {
+                                System.out.println("\n-> Agência " + numeroAgencia
+                                        + " já possui cadastro!");
+                                break;
+                            }
                             agencia = new Agencia(numeroAgencia, descricaoAgencia);
                             listaAgencias.addAgencia(numeroAgencia, agencia);
                             System.out.println("\n-> Agência " + numeroAgencia + " criada em "
@@ -191,6 +196,12 @@ public class Banco extends Thread {
                             numeroConta = Integer.parseInt(protocoloEntrada[2]);
                             if (listaAgencias.getAgencia(numeroAgencia) != null) {
                                 agencia = listaAgencias.getAgencia(numeroAgencia);
+                                if (agencia.getConta(numeroConta) != null) {
+                                    System.out.println("\n-> Conta " + numeroConta
+                                            + " já possui cadastro na Agência "
+                                            + numeroAgencia + "!");
+                                    break;
+                                }
                                 conta = new Conta(agencia, numeroConta);
                                 agencia.addConta(numeroConta, conta);
                                 System.out.println("\n-> Conta " + numeroConta
