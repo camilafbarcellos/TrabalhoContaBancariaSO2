@@ -2,10 +2,6 @@ package programa;
 
 import java.util.HashMap;
 
-/**
- *
- * @author camila
- */
 public class Agencia {
 
     private int numero;
@@ -43,45 +39,25 @@ public class Agencia {
     }
 
     public void addConta(int numeroConta, Conta conta) {
-        try {
-            this.contas.put(numeroConta, conta);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.contas.put(numeroConta, conta);
     }
 
     public Conta getConta(int numeroConta) {
-        try {
-            return this.contas.get(numeroConta);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return this.contas.get(numeroConta);
     }
-    
+
     public void removeConta(int numeroConta) {
-        try {
-            this.contas.remove(numeroConta);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.contas.remove(numeroConta);
     }
-    
+
     public void listarContas() {
-        System.out.println(contas);
-    }
-    
-    /*
-    public void listarContas() {        
-        Iterator it = contas.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry el = (Map.Entry) it.next();
-            int numero = (Integer) el.getKey();
-            Conta c = this.getConta(numero);
-            System.out.println(c.getNumero() + " = " + c.getSaldo());
-            it.remove(); // avoids a ConcurrentModificationException
+        for (Conta c : contas.values()) {
+            System.out.println("Número: " + c.getNumero()
+                    + "\nAgência: " + c.getAgencia().getNumero()
+                    + "\nSaldo: R$ " + c.getSaldo()
+                    + "\nQuantidade de correntistas: " + c.getQuantCorrentistas()
+                    + "\n");
         }
     }
-    */
 
 }

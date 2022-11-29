@@ -2,10 +2,6 @@ package programa;
 
 import java.util.HashMap;
 
-/**
- *
- * @author camila
- */
 public class AgenciasCadastradas {
 
     private HashMap<Integer, Agencia> agencias;
@@ -15,46 +11,23 @@ public class AgenciasCadastradas {
     }
 
     public void addAgencia(int numero, Agencia agencia) {
-        try {
-            this.agencias.put(numero, agencia);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.agencias.put(numero, agencia);
     }
-    
+
     public Agencia getAgencia(int numero) {
-        try {
-            return this.agencias.get(numero);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return this.agencias.get(numero);
     }
 
     public void removeAgencia(int numero) {
-        try {
-            this.agencias.remove(numero);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public void listarAgencias() {
-        System.out.println(agencias);
+        this.agencias.remove(numero);
     }
 
-    /*
     public void listarAgencias() {
-        Iterator it = agencias.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry el = (Map.Entry) it.next();
-            int numero = (Integer) el.getKey();
-            Agencia a = this.getAgencia(numero);
-            System.out.println(a.getNumero() + " = " + a.getDescricao());
-            it.remove(); // avoids a ConcurrentModificationException
+        for (Agencia a : agencias.values()) {
+            System.out.println("Número: " + a.getNumero()
+                    + "\nDescrição: " + a.getDescricao() + "\n");
         }
     }
-    */
 
     public HashMap<Integer, Agencia> getAgencias() {
         return agencias;

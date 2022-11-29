@@ -2,11 +2,8 @@ package programa;
 
 import java.util.HashMap;
 
-/**
- *
- * @author camila
- */
 public class Conta {
+
     private Agencia agencia;
     private int numero;
     private float saldo;
@@ -20,7 +17,7 @@ public class Conta {
         this.quantCorrentistas = 0;
         this.correntistas = new HashMap<>();
     }
-    
+
     public void depositar(float valor) {
         this.saldo += valor;
     }
@@ -72,45 +69,30 @@ public class Conta {
     public void setCorrentistas(HashMap<String, Correntista> correntistas) {
         this.correntistas = correntistas;
     }
-    
-    public void addCorrentista(String cpf, Correntista correntista) {
-        try {
+
+    public Boolean addCorrentista(String cpf, Correntista correntista) {
+        if (this.quantCorrentistas < 3) {
             this.correntistas.put(cpf, correntista);
-        } catch (Exception e) {
-            e.printStackTrace();
+            return true;
+        } else {
+            return false;
         }
     }
 
     public Correntista getCorrentista(String cpf) {
-        try {
-            return this.correntistas.get(cpf);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return this.correntistas.get(cpf);
     }
-    
-    public void removeCorrentista(String cpf) {
-        try {
-            this.correntistas.remove(cpf);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    /*
-    public void addCorrentista(Correntista correntista) {
-        if (this.correntistas == null) {
-            this.correntistas = new ArrayList<>();
-        }
 
-        this.correntistas.add(correntista);
-        this.quantCorrentistas++;
+    public void removeCorrentista(String cpf) {
+        this.correntistas.remove(cpf);
     }
-    
-    public void removeCorrentista(Correntista correntista) {
-        this.correntistas.remove(correntista);
-        this.quantCorrentistas--;
+
+    public void listarCorrentistas() {
+        System.out.println("{");
+        for (Correntista c : correntistas.values()) {
+            System.out.println("CPF: " + c.getCpf()
+                    + "\nNome: " + c.getNome() + "\n");
+        }
+        System.out.println("}");
     }
-    */
 }
