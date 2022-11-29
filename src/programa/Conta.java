@@ -70,13 +70,9 @@ public class Conta {
         this.correntistas = correntistas;
     }
 
-    public Boolean addCorrentista(String cpf, Correntista correntista) {
-        if (this.quantCorrentistas < 3) {
-            this.correntistas.put(cpf, correntista);
-            return true;
-        } else {
-            return false;
-        }
+    public void addCorrentista(String cpf, Correntista correntista) {
+        this.correntistas.put(cpf, correntista);
+        this.quantCorrentistas++;
     }
 
     public Correntista getCorrentista(String cpf) {
@@ -85,14 +81,14 @@ public class Conta {
 
     public void removeCorrentista(String cpf) {
         this.correntistas.remove(cpf);
+        this.quantCorrentistas--;
     }
 
     public void listarCorrentistas() {
-        System.out.println("{");
+        System.out.println("Correntistas cadastrados:");
         for (Correntista c : correntistas.values()) {
             System.out.println("CPF: " + c.getCpf()
                     + "\nNome: " + c.getNome() + "\n");
         }
-        System.out.println("}");
     }
 }

@@ -85,10 +85,9 @@ public class Banco extends Thread {
                             valor = Float.parseFloat(protocoloEntrada[4]);
                             conta.depositar(valor);
                             System.out.println("\n-> Depósito na Conta " + conta.getNumero()
-                                    + ", da Agência " + numeroAgencia
-                                    + ", no valor de R$ " + valor + " realizado por "
-                                    + correntista.getNome() + " em "
-                                    + cliente.getIp());
+                                    + " da Agência " + numeroAgencia
+                                    + " no valor de R$ " + valor + " realizado por "
+                                    + cpfCorrentista + " em " + cliente.getIp());
                             break;
 
                         case 2: // protocolo operacao;numeroAgencia;numeroConta;cpfCorrentista;valor
@@ -106,16 +105,15 @@ public class Banco extends Thread {
                             conta = agencia.getConta(numeroConta);
                             cpfCorrentista = protocoloEntrada[3];
                             if (conta.getCorrentista(cpfCorrentista) == null) {
-                                System.out.println("\n-> Correntista de CPF " + cpfCorrentista + " inexistente!");
+                                System.out.println("\n-> Correntista de CPF " + cpfCorrentista+ " inexistente!");
                                 break;
                             }
                             valor = Float.parseFloat(protocoloEntrada[4]);
                             conta.sacar(valor);
                             System.out.println("\n-> Saque na Conta " + numeroConta
-                                    + ", da Agência " + numeroAgencia
-                                    + ", no valor de R$ " + valor + " realizado por "
-                                    + correntista.getNome() + " em "
-                                    + cliente.getIp());
+                                    + " da Agência " + numeroAgencia
+                                    + " no valor de R$ " + valor + " realizado por "
+                                    + cpfCorrentista + cliente.getIp());
                             break;
 
                         case 3: // protocolo operacao;numeroAgencia;numeroConta
@@ -153,7 +151,7 @@ public class Banco extends Thread {
                     // primeiro parâmetro é a operação
                     int operacao = Integer.parseInt(protocoloEntrada[0]);
                     int numeroAgencia, numeroConta;
-                    String descricaoAgencia;
+                    String descricaoAgencia, cpfCorrentista, nomeCorrentista;
 
                     switch (operacao) {
                         case 1: // protocolo operacao;numeroAgencia;descricaoAgencia
@@ -176,8 +174,17 @@ public class Banco extends Thread {
                             listaAgencias.listarAgencias();
                             break;
 
-                        case 3:
-
+                        case 3: // protocolo operacao;numeroAgencia;descricaoAgencia
+                            numeroAgencia = Integer.parseInt(protocoloEntrada[1]);
+                            descricaoAgencia = protocoloEntrada[2];
+                            if (listaAgencias.getAgencia(numeroAgencia) != null) {
+                                agencia = listaAgencias.getAgencia(numeroAgencia);
+                                agencia.setDescricao(descricaoAgencia);
+                                System.out.println("\n-> Agência " + numeroAgencia
+                                        + " alterada em " + cliente.getIp());
+                                break;
+                            }
+                            System.out.println("\n-> Agência " + numeroAgencia + " inexistente!");
                             break;
 
                         case 4: // protocolo operacao;numeroAgencia
@@ -224,8 +231,42 @@ public class Banco extends Thread {
                             System.out.println("\n-> Agência " + numeroAgencia + " inexistente!");
                             break;
 
-                        case 7:
+                        case 7: // protocolo numeroAgencia;numeroConta;cpfCorrentista;nomeCorrentista
+                            numeroAgencia = Integer.parseInt(protocoloEntrada[1]);
+                            numeroConta = Integer.parseInt(protocoloEntrada[2]);
+                            cpfCorrentista = protocoloEntrada[3];
+                            if (listaAgencias.getAgencia(numeroAgencia) != null) {
+                                agencia = listaAgencias.getAgencia(numeroAgencia);
+                                if (agencia.getConta(numeroConta) != null) {
+                                    conta = agencia.getConta(numeroConta);
+                                    if (conta.getCorrentista(cpfCorrentista) == null) {
+                                        if (conta.getQuantCorrentistas() < 3) {
+                                            // caso adição, requer parâmetro nomeCorrentista
+                                            nomeCorrentista = protocoloEntrada[4];
+                                            correntista = new Correntista(cpfCorrentista, nomeCorrentista);
+                                            conta.addCorrentista(cpfCorrentista, correntista);
+                                            System.out.println("\n-> Correntista de CPF "
+                                                    + cpfCorrentista + " adicionado à Conta "
+                                                    + numeroConta + " da Agência " + numeroAgencia
+                                                    + " em " + cliente.getIp());
+                                            break;
+                                        }
+                                        System.out.println("\n-> Conta " + numeroConta 
+                                                + " possui quantidade máxima de Correntistas!");
+                                        break;
+                                    }
 
+                                    conta.removeCorrentista(cpfCorrentista);
+                                    System.out.println("\n-> Correntista de CPF "
+                                            + cpfCorrentista + " removido da Conta "
+                                            + numeroConta + " da Agência " + numeroAgencia
+                                            + " em " + cliente.getIp());
+                                    break;
+                                }
+                                System.out.println("\n-> Conta " + numeroConta + " inexistente!");
+                                break;
+                            }
+                            System.out.println("\n-> Agência " + numeroAgencia + " inexistente!");
                             break;
 
                         case 8: // protocolo operacao;numeroAgencia;numeroConta

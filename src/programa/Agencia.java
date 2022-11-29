@@ -55,8 +55,8 @@ public class Agencia {
             System.out.println("Número: " + c.getNumero()
                     + "\nAgência: " + c.getAgencia().getNumero()
                     + "\nSaldo: R$ " + c.getSaldo()
-                    + "\nQuantidade de correntistas: " + c.getQuantCorrentistas()
-                    + "\n");
+                    + "\nQuantidade de correntistas: " + c.getQuantCorrentistas());
+            c.listarCorrentistas();
         }
     }
 

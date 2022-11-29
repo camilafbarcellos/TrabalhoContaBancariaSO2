@@ -99,30 +99,30 @@ public class Cliente extends Thread {
                         case 0:
                             saida.println("SAIR");
                             return;
-                            
+
                         case 1:
                             System.out.println("Protocolo de depósito:"
                                     + "\nnumeroAgencia;numeroConta;cpfCorrentista;valor");
                             acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
-                            
+
                         case 2:
                             System.out.println("Protocolo de saque:"
                                     + "\nnumeroAgencia;numeroConta;cpfCorrentista;valor");
                             acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
-                            
+
                         case 3:
                             System.out.println("Protocolo de extrato:"
                                     + "\nnumeroAgencia;numeroConta");
                             acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
-                            
+
                         default:
                             System.out.println("Opção inválida!");
                     }
                 } while (opcaoMenu != 0);
-                
+
             } else {
                 int opcaoMenu;
                 do {
@@ -149,52 +149,58 @@ public class Cliente extends Thread {
                         case 0:
                             saida.println("SAIR");
                             return;
-                            
+
                         case 1:
                             System.out.println("Protocolo de criação de Agência:"
                                     + "\nnumeroAgencia;descricaoAgencia");
                             acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
-                            
+
                         case 2:
                             System.out.println("Pressione 'Enter' para prosseguir");
                             acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
-                            
+
                         case 3:
-                            System.out.println("Escolheu ATUALIZAR A");
+                            System.out.println("Protocolo de atualização de Agência:"
+                                    + "\nnumeroAgencia;descricaoAgencia"
+                                    + "\nObs.: permitida apenas alteração de descrição");
                             acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
-                            
+
                         case 4:
                             System.out.println("Protocolo de remoção de Agência:"
                                     + "\nnumeroAgencia");
                             acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
-                            
+
                         case 5:
                             System.out.println("Protocolo de criação de Conta:"
                                     + "\nnumeroAgencia;numeroConta");
                             acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
-                            
+
                         case 6:
                             System.out.println("Protocolo de listagem de Contas:"
                                     + "\nnumeroAgencia");
                             acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
-                            
+
                         case 7:
-                            System.out.println("Escolheu ATUALIZAR C");
+                            System.out.println("Protocolo de atualização de Conta:"
+                                    + "\nnumeroAgencia;numeroConta;cpfCorrentista;nomeCorrentista"
+                                    + "\nObs.: em caso de adição de Correntista, informar CPF e nome,"
+                                    + "\nem caso de remoção, informar apenas CPF!"
+                                    + "\nInformar um CPF já existente irá remover o Correntista!");
                             acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
-                            
+
                         case 8:
                             System.out.println("Protocolo de remoção de Conta:"
                                     + "\nnumeroAgencia;numeroConta");
                             acionarRecepcaoDeMensagens(conexao, teclado, saida, protocoloEntrada);
                             break;
-                            
+
                         default:
                             System.out.println("Opção inválida!");
                     }
@@ -213,14 +219,14 @@ public class Cliente extends Thread {
             String linha;
             while (true) {
                 // ler a linha digitada no teclado
-                    System.out.print("> ");
-                    linha = teclado.readLine();
-                    // antes de enviar, verifica se a conexão não foi fechada
-                    if (done) {
-                        break;
-                    }
-                    // adiciona ao protocolo de entrada
-                    protocoloEntrada += ";" + linha;
+                System.out.print("> ");
+                linha = teclado.readLine();
+                // antes de enviar, verifica se a conexão não foi fechada
+                if (done) {
+                    break;
+                }
+                // adiciona ao protocolo de entrada
+                protocoloEntrada += ";" + linha;
                 System.out.println("Protocolo enviado: " + protocoloEntrada);
                 // envia para o servidor
                 saida.println(protocoloEntrada);
