@@ -27,6 +27,59 @@ public class Banco extends Thread {
         cliente = c;
         conexao = c.getSocket();
     }
+    
+    /**Método principal de execução do servidor que
+     * realiza o tratamento das conexões dos clientes
+     * ao servidor por meio de threads
+     * @author Camila Florão Barcellos
+     * @param args String - Bloco de comandos
+     */
+    public static void main(String args[]) {
+        // instancia a lista de clientes conectados
+        clientes = new ArrayList<>();
+        // instancia o objeto de agências cadastradas
+        listaAgencias = new AgenciasCadastradas();
+        try {
+            // criando um socket que fica escutando a porta 2222
+            ServerSocket s = new ServerSocket(2222);
+            System.out.println(". . . . . . . . . . . . . . . . . . . . . .");
+            System.out.println(".     BANCO MULTI SOCKETS - SERVIDOR      .");
+            System.out.println(". . . . . . . . . . . . . . . . . . . . . .");
+            System.out.println(". Camila F Barcellos                      .");
+            System.out.println(". Sistemas Operacionais II                .");
+            System.out.println(". Prof. Roberto Wiest                     .");
+            System.out.println(". . . . . . . . . . . . . . . . . . . . . .");
+            
+            while (true) {
+                System.out.println("\nAguardando conexão de clientes...");
+                // aceita a conexão
+                Socket conexao = s.accept();
+                // instancia cliente com o socket
+                Cliente cliente = new Cliente(conexao);
+                // atribui o endereço do cliente ao seu IP
+                cliente.setIp(conexao.getRemoteSocketAddress().toString());
+                // adiciona o cliente na lista de clientes do servidor
+                clientes.add(cliente);
+
+                System.out.println("\nNovo cliente em " + conexao.getRemoteSocketAddress());
+                System.out.println("\nLista de clientes conectados:");
+                for (Cliente c : clientes) {
+                    if (c.getTipo() == null) {
+                        System.out.println("-> Não-autenticado em " + c.getIp());
+                    } else {
+                        System.out.println("-> " + c.getTipo() + " em " + c.getIp());
+                    }
+                }
+
+                // cria uma nova thread para tratar essa conexão
+                Thread t = new Banco(cliente);
+                t.start();
+                // volta ao loop e espera mais conexões
+            }
+        } catch (IOException e) {
+            System.out.println("IOException: " + e);
+        }
+    }
 
     /**Execução da thread que realiza o controle dos clientes
      * e dos protocolos de entrada enviados por eles para
@@ -82,7 +135,7 @@ public class Banco extends Thread {
                             correntista = conta.getCorrentista(cpfCorrentista);
                             valor = Float.parseFloat(protocoloEntrada[4]);
                             conta.depositar(valor);
-                            System.out.println("\n-> Depósito na Conta " + conta.getNumero()
+                            System.out.println("\n-> Depósito na Conta " + numeroConta
                                     + " da Agência " + numeroAgencia
                                     + " no valor de R$ " + valor + " realizado por "
                                     + cpfCorrentista + " em " + cliente.getIp());
@@ -274,7 +327,7 @@ public class Banco extends Thread {
                                 agencia = listaAgencias.getAgencia(numeroAgencia);
                                 if (agencia.getConta(numeroConta) != null) {
                                     conta = agencia.getConta(numeroConta);
-                                    agencia.removeConta(conta.getNumero());
+                                    agencia.removeConta(numeroConta);
                                     System.out.println("\n-> Conta " + numeroConta
                                             + " removida da Agência " + numeroAgencia
                                             + " em " + cliente.getIp());
@@ -305,59 +358,6 @@ public class Banco extends Thread {
                 } else {
                     System.out.println("-> " + c.getTipo() + " em " + c.getIp());
                 }
-            }
-        } catch (IOException e) {
-            System.out.println("IOException: " + e);
-        }
-    }
-
-    /**Método principal de execução do servidor que
-     * realiza o tratamento das conexões dos clientes
-     * ao servidor por meio de threads
-     * @author Camila Florão Barcellos
-     * @param args String - Bloco de comandos
-     */
-    public static void main(String args[]) {
-        // instancia a lista de clientes conectados
-        clientes = new ArrayList<>();
-        // instancia o objeto de agências cadastradas
-        listaAgencias = new AgenciasCadastradas();
-        try {
-            // criando um socket que fica escutando a porta 2222
-            ServerSocket s = new ServerSocket(2222);
-            System.out.println(". . . . . . . . . . . . . . . . . . . . . .");
-            System.out.println(".     BANCO MULTI SOCKETS - SERVIDOR      .");
-            System.out.println(". . . . . . . . . . . . . . . . . . . . . .");
-            System.out.println(". Camila F Barcellos                      .");
-            System.out.println(". Sistemas Operacionais II                .");
-            System.out.println(". Prof. Roberto Wiest                     .");
-            System.out.println(". . . . . . . . . . . . . . . . . . . . . .");
-            
-            while (true) {
-                System.out.println("\nAguardando conexão de clientes...");
-                // aceita a conexão
-                Socket conexao = s.accept();
-                // instancia cliente com o socket
-                Cliente cliente = new Cliente(conexao);
-                // atribui o endereço do cliente ao seu IP
-                cliente.setIp(conexao.getRemoteSocketAddress().toString());
-                // adiciona o cliente na lista de clientes do servidor
-                clientes.add(cliente);
-
-                System.out.println("\nNovo cliente em " + conexao.getRemoteSocketAddress());
-                System.out.println("\nLista de clientes conectados:");
-                for (Cliente c : clientes) {
-                    if (c.getTipo() == null) {
-                        System.out.println("-> Não-autenticado em " + c.getIp());
-                    } else {
-                        System.out.println("-> " + c.getTipo() + " em " + c.getIp());
-                    }
-                }
-
-                // cria uma nova thread para tratar essa conexão
-                Thread t = new Banco(cliente);
-                t.start();
-                // volta ao loop e espera mais conexões
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e);
